@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee & Sweet House - 50 Menu</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background-color: #120c0a;
+      color: #f3e5dc;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 8%;
+      background: rgba(18, 12, 10, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid #281c16;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e2b184;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 30px;
+    }
+
+    .nav-links a {
+      color: #c4b5a5;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: #e2b184;
+    }
+
+    .btn-cart {
+      background-color: #e2b184;
+      color: #120c0a;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-cart:hover {
+      background-color: #d19f72;
+    }
+
+    /* Hero Banner */
+    .hero-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 50px 8%;
+      min-height: 50vh;
+    }
+
+    .hero-content {
+      max-width: 500px;
+    }
+
+    .hero-content h1 {
+      font-size: 3rem;
+      color: #f7e1d7;
+      margin-bottom: 15px;
+      line-height: 1.2;
+    }
+
+    .hero-content p {
+      color: #a89a8e;
+      margin-bottom: 25px;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background-color: #e2b184;
+      color: #120c0a;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .hero-image img {
+      width: 280px;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 30px;
+      border: 2px solid rgba(226, 177, 132, 0.3);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    /* Menu Section */
+    .menu-section {
+      padding: 60px 8%;
+      background-color: #1a120e;
+    }
+
+    .menu-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .menu-header h2 {
+      font-size: 2.2rem;
+      color: #f7e1d7;
+      margin-bottom: 10px;
+    }
+
+    /* Search Bar */
+    .search-box {
+      max-width: 450px;
+      margin: 0 auto 30px auto;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 14px 22px;
+      border-radius: 25px;
+      border: 1px solid #3a2b22;
+      background: #251b15;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .search-box input:focus {
+      border-color: #e2b184;
+    }
+
+    /* Filter Buttons */
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .category-btn {
+      background: #251b15;
+      color: #a89a8e;
+      border: 1px solid #3a2b22;
+      padding: 10px 22px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .category-btn.active, .category-btn:hover {
+      background: #e2b184;
+      color: #120c0a;
+      border-color: #e2b184;
+    }
+
+    /* Grid layout */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+    }
+
+    .product-card {
+      background: #251b15;
+      border-radius: 24px;
+      padding: 16px;
+      border: 1px solid #3a2b22;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      transform: translateY(-7px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    }
+
+    .card-img {
+      position: relative;
+      height: 190px;
+      border-radius: 18px;
+      overflow: hidden;
+      background-color: #120c0a;
+    }
+
+    .card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .rating {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(18, 12, 10, 0.85);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #e2b184;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: #a89a8e;
+      margin: 5px 0 12px 0;
+      min-height: 38px;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .price {
+      color: #e2b184;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+
+    .add-to-cart {
+      background: #e2b184;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      color: #120c0a;
+      transition: 0.2s;
+    }
+
+    .add-to-cart:hover {
+      transform: scale(1.1);
+      background: #fff;
+    }
+
+    /* MODAL OYNALAR UCHUN STYL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #1c1410;
+      border: 1px solid #3a2b22;
+      border-radius: 28px;
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      position: relative;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 1.8rem;
+      color: #a89a8e;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #e2b184;
+    }
+
+    .modal-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin-bottom: 15px;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      color: #ffffff;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .modal-desc {
+      font-size: 0.95rem;
+      color: #b8a89a;
+      margin-bottom: 15px;
+    }
+
+    .modal-price {
+      font-size: 1.5rem;
+      color: #e2b184;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    /* Form va Xarita stillari */
+    .form-group {
+      margin-bottom: 12px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      color: #e2b184;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #3a2b22;
+      background: #251b15;
+      color: #fff;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #e2b184;
+    }
+
+    #map {
+      height: 160px;
+      width: 100%;
+      border-radius: 15px;
+      margin-top: 6px;
+      border: 1px solid #3a2b22;
+    }
+
+    .cart-item-list {
+      text-align: left;
+      background: #251b15;
+      padding: 10px 15px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .btn-action {
+      width: 100%;
+      background-color: #e2b184;
+      color: #120c0a;
+      border: none;
+      padding: 14px;
+      border-radius: 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-action:hover {
+      background-color: #f7e1d7;
+    }
+
+    /* FOOTER */
+    .footer {
+      background-color: #0c0806;
+      padding: 40px 8% 20px 8%;
+      border-top: 1px solid #281c16;
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .footer-title {
+      color: #e2b184;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .footer-info {
+      font-size: 1.15rem;
+      color: #f3e5dc;
+      margin: 10px 0;
+    }
+
+    .footer-info a {
+      color: #e2b184;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .btn-telegram {
+      display: inline-block;
+      margin-top: 15px;
+      background-color: #24A1DE;
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .copyright {
+      margin-top: 30px;
+      font-size: 0.85rem;
+      color: #7a6e65;
+      border-top: 1px solid #1a120e;
+      padding-top: 15px;
+    }
+
+    @media (max-width: 768px) {
+      .hero-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+      }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="logo">☕ Sweet & Coffee</div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#hero" class="active">Bosh sahifa</a></li>
+        <li><a href="#menu">Menyu (50)</a></li>
+        <li><a href="#contact">Aloqa</a></li>
+      </ul>
+    </nav>
+    <button class="btn-cart" onclick="openCartModal()">Savat (<span id="cart-count">0</span>)</button>
+  </header>
+
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <h1>Kofe va Shirinliklar Olami</h1>
+      <p>35 xil saralangan kofe turlari va kofe bilan yeyish uchun 15 xil eng mazali shirinliklar hamda tortlar.</p>
+      <a href="#menu" class="btn-primary">Menyuni ko'rish ↓</a>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=600&q=80" alt="Coffee and Cake">
+    </div>
+  </section>
+
+  <section id="menu" class="menu-section">
+    <div class="menu-header">
+      <h2>Bizning 50 ta Saralangan Menyu</h2>
+      <p style="color: #a89a8e;">O'zingizga yoqqan kofe va dessertni tanlang</p>
+    </div>
+
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="Qidiring (masalan: Tiramisu, Latte, Cheesecake)..." onkeyup="filterProducts()">
+    </div>
+
+    <div class="categories">
+      <button class="category-btn active" onclick="setCategory('all', event)">Hammasi (50)</button>
+      <button class="category-btn" onclick="setCategory('hot', event)">Issiq Kofelar</button>
+      <button class="category-btn" onclick="setCategory('cold', event)">Muzli Kofelar</button>
+      <button class="category-btn" onclick="setCategory('special', event)">Specialty Kofelar</button>
+      <button class="category-btn" onclick="setCategory('dessert', event)">🍰 Shirinliklar</button>
+    </div>
+
+    <div class="product-grid" id="product-grid"></div>
+  </section>
+
+  <div class="modal-overlay" id="product-detail-modal">
+    <div class="modal-box">
+      <span class="modal-close" onclick="closeProductModal()">&times;</span>
+      <img id="modal-img" class="modal-img" src="" alt="Product">
+      <h3 id="modal-title" class="modal-title"></h3>
+      <p id="modal-desc" class="modal-desc"></p>
+      <div id="modal-price" class="modal-price"></div>
+      <button id="modal-add-btn" class="btn-action">Savatga qo'shish 🛒</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="cart-modal">
+    <div class="modal-box">
+      <span class="modal-close" onclick="closeCartModal()">&times;</span>
+      <h3 class="modal-title">Buyurtmani rasmiylashtirish 🛒</h3>
+      
+      <div id="cart-items" class="cart-item-list"></div>
+
+      <form id="checkout-form" onsubmit="submitOrder(event)">
+        <div class="form-group">
+          <label for="first-name">Ismingiz *</label>
+          <input type="text" id="first-name" required placeholder="Masalan: Ali">
+        </div>
+        
+        <div class="form-group">
+          <label for="last-name">Familiyangiz *</label>
+          <input type="text" id="last-name" required placeholder="Masalan: Valiye">
+        </div>
+
+        <div class="form-group">
+          <label for="phone-number">Telefon raqam *</label>
+          <input type="tel" id="phone-number" required placeholder="+998 90 123 45 67">
+        </div>
+
+        <div class="form-group">
+          <label>Xaritadan yetkazib berish manzilini tanlang:</label>
+          <div id="map"></div>
+          <input type="hidden" id="latitude">
+          <input type="hidden" id="longitude">
+        </div>
+
+        <button type="submit" class="btn-action">Buyurtmani tasdiqlash ✅</button>
+      </form>
+    </div>
+  </div>
+
+  <footer id="contact" class="footer">
+    <div class="footer-content">
+      <h3 class="footer-title">Bog'lanish va Buyurtmalar</h3>
+      <p class="footer-info">👤 <strong>Egasining ismi:</strong> Kamron</p>
+      <p class="footer-info">📞 <strong>Telefon raqam:</strong> <a href="tel:874435057">87 443 50 57</a></p>
+      <p class="footer-info">
+        📢 <strong>Telegram kanal:</strong> 
+        <a href="https://t.me/+4T4AsZlyTQpiYzgy" target="_blank">Kanalga o'tish</a>
+      </p>
+      <a href="https://t.me/+4T4AsZlyTQpiYzgy" target="_blank" class="btn-telegram">✈️ Telegram kanalimizga a'zo bo'ling</a>
+    </div>
+    <div class="copyright">
+      <p>© 2026 Sweet & Coffee House. Barcha huquqlar himoyalangan.</p>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const imgHot = "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=400&q=80";
+
+    const rawItems = [
+      // ISSIQ KOFELAR
+      { name: "Espresso Classic", cat: "hot", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=400&q=80" },
+      { name: "Double Espresso", cat: "hot", img: "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=400&q=80" },
+      { name: "Caffe Americano", cat: "hot", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80" },
+      { name: "Cappuccino Cream", cat: "hot", img: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=400&q=80" },
+      { name: "Caffe Latte", cat: "hot", img: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=400&q=80" },
+      { name: "Vanilla Latte", cat: "hot", img: "https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=400&q=80" },
+      { name: "Caramel Latte", cat: "hot", img: "https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=400&q=80" },
+      { name: "Hazelnut Latte", cat: "hot", img: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=400&q=80" },
+      { name: "Flat White", cat: "hot", img: "https://images.unsplash.com/photo-1577968897966-3d4325b36b61?auto=format&fit=crop&w=400&q=80" },
+      { name: "Caffe Mocha", cat: "hot", img: "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?auto=format&fit=crop&w=400&q=80" },
+      { name: "White Mocha", cat: "hot", img: "https://images.unsplash.com/photo-1517256064527-09c73fc73e38?auto=format&fit=crop&w=400&q=80" },
+      { name: "Espresso Macchiato", cat: "hot", img: "https://images.unsplash.com/photo-1485808191679-5f86510681a2?auto=format&fit=crop&w=400&q=80" },
+      { name: "Cortado", cat: "hot", img: "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=400&q=80" },
+      { name: "Irish Coffee", cat: "hot", img: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80" },
+      { name: "Turkish Coffee", cat: "hot", img: "https://images.unsplash.com/photo-1561882488-9162a0ab6923?auto=format&fit=crop&w=400&q=80" },
+
+      // MUZLI KOFELAR
+      { name: "Classic Cold Brew", cat: "cold", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Americano", cat: "cold", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Cappuccino", cat: "cold", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Caramel Latte", cat: "cold", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Mocha Delight", cat: "cold", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Caramel Frappuccino", cat: "cold", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80" },
+      { name: "Mocha Frappuccino", cat: "cold", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80" },
+      { name: "Espresso Tonic", cat: "cold", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Flat White", cat: "cold", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced White Mocha", cat: "cold", img: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Caramel Macchiato", cat: "cold", img: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Iced Matcha Latte", cat: "cold", img: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=400&q=80" },
+      { name: "Vanilla Sweet Cream Cold Brew", cat: "cold", img: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80" },
+
+      // SPECIALTY KOFE
+      { name: "Hot Chocolate Supreme", cat: "special", img: "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=400&q=80" },
+      { name: "Matcha Green Tea Latte", cat: "special", img: "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=400&q=80" },
+      { name: "Pistachio Special Latte", cat: "special", img: "https://images.unsplash.com/photo-1530373239216-42518e6b4063?auto=format&fit=crop&w=400&q=80" },
+      { name: "Coconut Oat Latte", cat: "special", img: "https://images.unsplash.com/photo-1579992357154-faf4bde95870?auto=format&fit=crop&w=400&q=80" },
+      { name: "Salted Caramel Latte", cat: "special", img: "https://images.unsplash.com/photo-1530373239216-42518e6b4063?auto=format&fit=crop&w=400&q=80" },
+      { name: "Pumpkin Spice Latte", cat: "special", img: "https://images.unsplash.com/photo-1579992357154-faf4bde95870?auto=format&fit=crop&w=400&q=80" },
+      { name: "Nutella Cream Mocha", cat: "special", img: "https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=400&q=80" },
+
+      // SHIRINLIKLAR
+      { name: "Butter Croissant", cat: "dessert", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80" },
+      { name: "Chocolate Croissant", cat: "dessert", img: "https://images.unsplash.com/photo-1530610478675-d401a75f1064?auto=format&fit=crop&w=400&q=80" },
+      { name: "Almond Croissant", cat: "dessert", img: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80" },
+      { name: "New York Cheesecake", cat: "dessert", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=400&q=80" },
+      { name: "Chocolate Brownie", cat: "dessert", img: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Classic Tiramisu Cake", cat: "dessert", img: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=400&q=80" },
+      { name: "Blueberry Muffin", cat: "dessert", img: "https://images.unsplash.com/photo-1607958996333-41aef7caefaa?auto=format&fit=crop&w=400&q=80" },
+      { name: "Chocolate Chip Cookie", cat: "dessert", img: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=400&q=80" },
+      { name: "Red Velvet Layer Cake", cat: "dessert", img: "https://images.unsplash.com/photo-1586788680434-30d324b2d46f?auto=format&fit=crop&w=400&q=80" },
+      { name: "French Macarons (5pcs)", cat: "dessert", img: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?auto=format&fit=crop&w=400&q=80" },
+      { name: "Belgian Waffles with Caramel", cat: "dessert", img: "https://images.unsplash.com/photo-1562376552-0d160a2f238d?auto=format&fit=crop&w=400&q=80" },
+      { name: "Chocolate Glazed Donut", cat: "dessert", img: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=400&q=80" },
+      { name: "Parisian Eclair", cat: "dessert", img: "https://images.unsplash.com/photo-1612203985729-70726954388c?auto=format&fit=crop&w=400&q=80" },
+      { name: "Cinnamon Roll", cat: "dessert", img: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80" },
+      { name: "San Sebastian Cheesecake", cat: "dessert", img: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=400&q=80" }
+    ];
+
+    const products = rawItems.map((item, index) => {
+      return {
+        id: index + 1,
+        name: item.name,
+        category: item.cat,
+        price: parseFloat((3.00 + (index % 5) * 0.50).toFixed(2)),
+        rating: (4.5 + (index % 5) * 0.1).toFixed(1),
+        img: item.img,
+        desc: "Yuqori sifatli kofe donalaridan tayyorlanadigan ajoyib ichimlik."
+      };
+    });
+
+    let currentCategory = 'all';
+    let cart = [];
+    let map = null;
+    let marker = null;
+
+    // EKRANGA CHIQARISH (Karta ustiga bosilganda oyna ochiladi)
+    function renderProducts(items) {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = "";
+
+      items.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        // Kofening har qanday joyiga bosilganda oyna ochilishi
+        card.onclick = () => openProductModal(product);
+
+        card.innerHTML = `
+          <div class="card-img">
+            <img src="${product.img}" alt="${product.name}" onerror="this.src='${imgHot}'">
+            <span class="rating">⭐ ${product.rating}</span>
+          </div>
+          <h3 class="card-title">#${product.id} ${product.name}</h3>
+          <p class="card-desc">${product.desc}</p>
+          <div class="card-footer">
+            <span class="price">$${product.price.toFixed(2)}</span>
+            <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${product.id})">+</button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // 1. KOFE USTIGA BOSGANDA MA'LUMOT MODALINI OCHISH
+    function openProductModal(product) {
+      document.getElementById('modal-img').src = product.img;
+      document.getElementById('modal-title').innerText = `#${product.id} ${product.name}`;
+      document.getElementById('modal-desc').innerText = product.desc;
+      document.getElementById('modal-price').innerText = `$${product.price.toFixed(2)}`;
+      
+      const addBtn = document.getElementById('modal-add-btn');
+      addBtn.onclick = () => {
+        addToCart(product.id);
+        closeProductModal();
+      };
+
+      document.getElementById('product-detail-modal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-detail-modal').classList.remove('active');
+    }
+
+    // SAVATGA QO'SHISH
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      cart.push(product);
+      document.getElementById('cart-count').innerText = cart.length;
+      alert(`${product.name} savatga qo'shildi! ✅`);
+    }
+
+    // 2. SAVAT MODALINI OCHISH VA RASMIYLASHTIRISH
+    function openCartModal() {
+      if (cart.length === 0) {
+        alert("Savat bo'sh! Iltimos, oldin mahsulot tanlang.");
+        return;
+      }
+
+      const cartItemsDiv = document.getElementById('cart-items');
+      cartItemsDiv.innerHTML = "";
+      let total = 0;
+
+      cart.forEach((item) => {
+        total += item.price;
+        const itemRow = document.createElement('div');
+        itemRow.className = 'cart-item';
+        itemRow.innerHTML = `<span>${item.name}</span> <span>$${item.price.toFixed(2)}</span>`;
+        cartItemsDiv.appendChild(itemRow);
+      });
+
+      const totalRow = document.createElement('div');
+      totalRow.className = 'cart-item';
+      totalRow.style.fontWeight = 'bold';
+      totalRow.style.borderTop = '1px solid #3a2b22';
+      totalRow.style.paddingTop = '5px';
+      totalRow.innerHTML = `<span>Jami:</span> <span>$${total.toFixed(2)}</span>`;
+      cartItemsDiv.appendChild(totalRow);
+
+      document.getElementById('cart-modal').classList.add('active');
+
+      setTimeout(initMap, 300);
+    }
+
+    function closeCartModal() {
+      document.getElementById('cart-modal').classList.remove('active');
+    }
+
+    // XARITANI YUKLASH (LEAFLET.JS)
+    function initMap() {
+      if (map !== null) return;
+
+      const defaultLat = 41.2995;
+      const defaultLng = 69.2401;
+
+      map = L.map('map').setView([defaultLat, defaultLng], 12);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+
+      document.getElementById('latitude').value = defaultLat;
+      document.getElementById('longitude').value = defaultLng;
+
+      map.on('click', function(e) {
+        const { lat, lng } = e.latlng;
+        marker.setLatLng([lat, lng]);
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lng;
+      });
+
+      marker.on('dragend', function(e) {
+        const position = marker.getLatLng();
+        document.getElementById('latitude').value = position.lat;
+        document.getElementById('longitude').value = position.lng;
+      });
+    }
+
+    // BUYURTMANI YUBORISH
+    function submitOrder(event) {
+      event.preventDefault();
+
+      const firstName = document.getElementById('first-name').value;
+      const lastName = document.getElementById('last-name').value;
+      const phone = document.getElementById('phone-number').value;
+      const lat = document.getElementById('latitude').value;
+      const lng = document.getElementById('longitude').value;
+
+      alert(`Rahmat, ${firstName} ${lastName}!\n\nBuyurtmangiz qabul qilindi.\nTelefon: ${phone}\nManzil koordinatalari: ${lat}, ${lng}\nBuyurtmalar soni: ${cart.length} ta.`);
+
+      cart = [];
+      document.getElementById('cart-count').innerText = 0;
+      closeCartModal();
+    }
+
+    // CATEGORY VA QIDIRUV
+    function setCategory(cat, event) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      filterProducts();
+    }
+
+    function filterProducts() {
+      const searchVal = document.getElementById('search-input').value.toLowerCase();
+      
+      const filtered = products.filter(p => {
+        const matchCategory = (currentCategory === 'all' || p.category === currentCategory);
+        const matchSearch = p.name.toLowerCase().includes(searchVal);
+        return matchCategory && matchSearch;
+      });
+
+      renderProducts(filtered);
+    }
+
+    // MODAL SHAFFAF JOYIGA BOSILGANDA YOPILISHI
+    window.onclick = function(event) {
+      const detailModal = document.getElementById('product-detail-modal');
+      const cartModal = document.getElementById('cart-modal');
+      if (event.target === detailModal) closeProductModal();
+      if (event.target === cartModal) closeCartModal();
+    };
+
+    renderProducts(products);
+  </script>
+</body>
+</html>
